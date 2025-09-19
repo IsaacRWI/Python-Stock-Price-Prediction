@@ -3,6 +3,7 @@ import yfinance as yf
 import numpy as np
 import pandas
 import datetime
+import matplotlib.pyplot as plt
 
 df = yf.download("^GSPC", start="2010-01-01", multi_level_index=False)  # multi level index includes ticker name and other unnecessary for training data
 # print(df)
@@ -20,3 +21,6 @@ def string_to_datetime (s):
 
 df.index = df.index.apply(string_to_datetime)
 """
+
+plt.plot(df.index, df["Close"])
+plt.show()
