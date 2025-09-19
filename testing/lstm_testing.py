@@ -23,7 +23,7 @@ def str_to_datetime (s):
 
 
 plt.plot(df.index, df["Close"])
-plt.show()
+# plt.show()  # uncomment for plotting results
 
 def df_to_windowed_df (dataframe, first_date_str, last_date_str, n=3):  # turns dataframe into training data for model, with n being the number of previous datapoints it looks at for predictions
     first_date = str_to_datetime(first_date_str)
@@ -78,3 +78,18 @@ def df_to_windowed_df (dataframe, first_date_str, last_date_str, n=3):  # turns 
 
 windowed_df = df_to_windowed_df(df, "2010-01-07", "2025-09-18")
 print(windowed_df)
+
+# for uni-variate forecasting as we only use 1 variable in the prediction that being the closing price
+def windowed_df_to_date_X_y (windowed_dataframe):  # function to turn windowed dataframe into 3 numpy arrays to train tensorflow model
+    df_as_np = windowed_dataframe.to_numpy()
+    dates = df_as_np[:, 0]  # turns all rows in the first column :, 0
+    middle_matrix = df_as_np[:, 1:-1]  # all rows starting from the second column until the last one exclusively
+    X = middle_matrix.reshape((len(dates), middle_matrix.shape[1], 1))  # first dimension being the len of dates ie number of observations or datapoints
+                                                                        # matrix.shape[1] shapes all the target- data into 1 3-dimensional variable?? i think
+                                                                        # last 1 as we are only using 1 variable, a 3-dimensional variable but still only 1  3 different values of the variable and how it changes over time but still only 1
+    y = df_as_np[:, -1]
+    return dates, X.astype(np.float32), y.astype(np.float32)
+
+dates, X, y = windowed_df_to_date_X_y(windowed_df)
+
+print(dates.shape, X.shape, y.shape)
