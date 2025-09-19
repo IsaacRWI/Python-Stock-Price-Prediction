@@ -22,7 +22,7 @@ def str_to_datetime (s):
 # df.index = df.index.apply(string_to_datetime)
 
 
-plt.plot(df.index, df["Close"])
+# plt.plot(df.index, df["Close"])
 # plt.show()  # uncomment for plotting results
 
 def df_to_windowed_df (dataframe, first_date_str, last_date_str, n=3):  # turns dataframe into training data for model, with n being the number of previous datapoints it looks at for predictions
@@ -93,3 +93,17 @@ def windowed_df_to_date_X_y (windowed_dataframe):  # function to turn windowed d
 dates, X, y = windowed_df_to_date_X_y(windowed_df)
 
 print(dates.shape, X.shape, y.shape)
+
+# splitting data into training, validation and testing
+q_80 = int(len(dates) * 0.8)
+q_90 = int(len(dates) * 0.9)
+
+dates_train, X_train, y_train = dates[:q_80], X[:q_80], y[:q_80]
+dates_val, X_val, y_val = dates[q_80:q_90], X[q_80:q_90], y[q_80:q_90]
+dates_test, X_test, y_test = dates[q_90:], X[q_90:], y[q_90:]
+
+plt.plot(dates_train, y_train)
+plt.plot(dates_val, y_val)
+plt.plot(dates_test, y_test)
+plt.legend(["training", "validation", "testing"])
+plt.show()
