@@ -4,6 +4,9 @@ import numpy as np
 import pandas
 import datetime
 import matplotlib.pyplot as plt
+from keras import Sequential
+from keras.optimizers import Adam
+from keras import layers
 
 df = yf.download("^GSPC", start="2010-01-01", multi_level_index=False)  # multi level index includes ticker name and other unnecessary for training data
 # print(df)
@@ -102,8 +105,25 @@ dates_train, X_train, y_train = dates[:q_80], X[:q_80], y[:q_80]
 dates_val, X_val, y_val = dates[q_80:q_90], X[q_80:q_90], y[q_80:q_90]
 dates_test, X_test, y_test = dates[q_90:], X[q_90:], y[q_90:]
 
+# plt.plot(dates_train, y_train)
+# plt.plot(dates_val, y_val)
+# plt.plot(dates_test, y_test)
+# plt.legend(["training", "validation", "testing"])
+# plt.show()
+
+model = Sequential([layers.Input((3, 1)),  # 3, 1 for the 3 previous days and 1 for uni-variate
+                    layers.LSTM(64),  # number of neurons for lstm  bigger more complicated and more overfitting
+                    layers.Dense(32, activation="relu"),
+                    layers.Dense(32, activation="relu"),
+                    layers.Dense(1)])
+model.compile(loss="mse",  # mean squared error for loss
+              optimizer = Adam(learning_rate=0.001),
+              metrics=["mean_absolute_error"])  # gives average error instead of squared
+
+model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=100)  # epochs is the number of times the data set is ran through
+
+train_predictions = model.predict(X_train).flatten()
+plt.plot(dates_train, train_predictions)
 plt.plot(dates_train, y_train)
-plt.plot(dates_val, y_val)
-plt.plot(dates_test, y_test)
-plt.legend(["training", "validation", "testing"])
+plt.legend(["training predictions", "price history"])
 plt.show()
