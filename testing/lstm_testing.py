@@ -4,7 +4,7 @@ import numpy as np
 import pandas
 import datetime
 
-df = yf.download("^GSPC", start="2010-01-01")
+df = yf.download("^GSPC", start="2010-01-01", multi_level_index=False)  # multi level index includes ticker name and other unnecessary for training data
 # print(df)
 
 df = df[["Close"]]  # keeps only the closing price column
